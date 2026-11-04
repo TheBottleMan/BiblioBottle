@@ -294,4 +294,155 @@ class Program
         Console.WriteLine("Simulación: Libro eliminado correctamente.");
         Pausar();
     }
+
+    // ==========================================
+    // 2. MÓDULO DE USUARIOS (A integrar en Program.cs)
+    // ==========================================
+    static void ShowUsersMenu()
+    {
+        bool volver = false;
+        while (!volver)
+        {
+            Console.Clear();
+            Console.WriteLine("--- GESTIÓN DE USUARIOS ---");
+            Console.WriteLine("2.1 Registrar usuario");
+            Console.WriteLine("2.2 Listar usuarios");
+            Console.WriteLine("2.3 Ver detalle de usuario");
+            Console.WriteLine("2.4 Actualizar usuario");
+            Console.WriteLine("2.5 Eliminar usuario");
+            Console.WriteLine("0. Volver al menú principal");
+            Console.Write("Seleccione una opción: ");
+
+            string opcion = Console.ReadLine();
+
+            switch (opcion)
+            {
+                case "2.1":
+                case "1":
+                    RegisterUser();
+                    break;
+                case "2.2":
+                case "2":
+                    ListUsers();
+                    break;
+                case "2.3":
+                case "3":
+                    ViewUserDetail();
+                    break;
+                case "2.4":
+                case "4":
+                    UpdateUserMenu();
+                    break;
+                case "2.5":
+                case "5":
+                    DeleteUser();
+                    break;
+                case "0":
+                    volver = true;
+                    break;
+                default:
+                    Console.WriteLine("\nOpción no válida.");
+                    Pausar();
+                    break;
+            }
+        }
+    }
+
+    static void RegisterUser()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Registrar usuario]");
+        Console.WriteLine("Simulación: Usuario registrado exitosamente.");
+        Pausar();
+    }
+
+    static void ListUsers()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Listar usuarios]");
+        Console.WriteLine("Simulación: Mostrando todos los usuarios registrados...");
+        Pausar();
+    }
+
+    static void ViewUserDetail()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Ver detalle de usuario]");
+        Console.Write("Ingrese el ID o documento del usuario: ");
+        Console.ReadLine();
+        Console.WriteLine("Simulación: Mostrando detalles del usuario...");
+        Pausar();
+    }
+
+    static void UpdateUserMenu()
+    {
+        bool volver = false;
+        while (!volver)
+        {
+            Console.Clear();
+            Console.WriteLine("--- ACTUALIZAR USUARIO ---");
+            Console.WriteLine("2.4.1 Editar nombre");
+            Console.WriteLine("2.4.2 Editar contacto");
+            Console.WriteLine("2.4.3 Activar / desactivar");
+            Console.WriteLine("0. Volver");
+            Console.Write("Seleccione una opción: ");
+
+            string opcion = Console.ReadLine();
+            switch (opcion)
+            {
+                case "2.4.1":
+                case "1":
+                    EditUserName();
+                    break;
+                case "2.4.2":
+                case "2":
+                    EditUserContact();
+                    break;
+                case "2.4.3":
+                case "3":
+                    ToggleUserActiveStatus();
+                    break;
+                case "0":
+                    volver = true;
+                    break;
+                default:
+                    Console.WriteLine("\nOpción inválida.");
+                    Pausar();
+                    break;
+            }
+        }
+    }
+
+    static void EditUserName()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Editar nombre de usuario]");
+        Console.WriteLine("Simulación: Nombre actualizado correctamente.");
+        Pausar();
+    }
+
+    static void EditUserContact()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Editar contacto de usuario]");
+        Console.WriteLine("Simulación: Contacto actualizado correctamente.");
+        Pausar();
+    }
+
+    static void ToggleUserActiveStatus()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Activar / Desactivar usuario]");
+        Console.WriteLine("Simulación: Estado del usuario cambiado.");
+        Pausar();
+    }
+
+    static void DeleteUser()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Eliminar usuario]");
+        Console.WriteLine("Validación: Verificando que no tenga préstamos activos...");
+        Console.WriteLine("Simulación: Usuario eliminado correctamente.");
+        Pausar();
+    }
 }
