@@ -735,4 +735,81 @@ class Program
         Console.WriteLine("Simulación: Total libros: 10 | Disponibles: 7 | Prestados: 3");
         Pausar();
     }
+
+    // ==========================================
+    // 5. MÓDULO DE PERSISTENCIA
+    // ==========================================
+    static void ShowPersistenceMenu()
+    {
+        bool volver = false;
+        while (!volver)
+        {
+            Console.Clear();
+            Console.WriteLine("--- GUARDAR / CARGAR DATOS ---");
+            Console.WriteLine("5.1 Guardar datos");
+            Console.WriteLine("5.2 Cargar datos");
+            Console.WriteLine("5.3 Reiniciar datos (vaciar todo)");
+            Console.WriteLine("0. Volver al menú principal");
+            Console.Write("Seleccione una opción: ");
+
+            string opcion = Console.ReadLine();
+
+            switch (opcion)
+            {
+                case "5.1":
+                case "1":
+                    SaveData();
+                    break;
+                case "5.2":
+                case "2":
+                    LoadData();
+                    break;
+                case "5.3":
+                case "3":
+                    ConfirmResetData();
+                    break;
+                case "0":
+                    volver = true;
+                    break;
+                default:
+                    Console.WriteLine("\nOpción no válida.");
+                    Pausar();
+                    break;
+            }
+        }
+    }
+
+    static void SaveData()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Guardar datos]");
+        Console.WriteLine("Simulación: Datos guardados correctamente en archivos simulados.");
+        Pausar();
+    }
+
+    static void LoadData()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Cargar datos]");
+        Console.WriteLine("Simulación: Datos cargados correctamente.");
+        Pausar();
+    }
+
+    static void ConfirmResetData()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Reiniciar datos]");
+        Console.Write("¿Está seguro de vaciar todos los datos? (S/N): ");
+        string respuesta = Console.ReadLine().Trim().ToUpper();
+
+        if (respuesta == "S")
+        {
+            Console.WriteLine("Simulación: Todos los datos han sido reiniciados.");
+        }
+        else
+        {
+            Console.WriteLine("Operación cancelada.");
+        }
+        Pausar();
+    }
 }
