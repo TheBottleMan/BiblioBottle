@@ -90,7 +90,7 @@ class Program
     }
 
     // ==========================================
-    // 1. MÓDULO DE LIBROS (A integrar en Program.cs)
+    // 1. MÓDULO DE LIBROS
     // ==========================================
     static void ShowBooksMenu()
     {
@@ -296,7 +296,7 @@ class Program
     }
 
     // ==========================================
-    // 2. MÓDULO DE USUARIOS (A integrar en Program.cs)
+    // 2. MÓDULO DE USUARIOS
     // ==========================================
     static void ShowUsersMenu()
     {
@@ -447,7 +447,7 @@ class Program
     }
 
     // ==========================================
-    // 3. MÓDULO DE PRÉSTAMOS (A integrar en Program.cs)
+    // 3. MÓDULO DE PRÉSTAMOS
     // ==========================================
     static void ShowLoansMenu()
     {
@@ -598,6 +598,141 @@ class Program
         Console.WriteLine("--> [Eliminar préstamo]");
         Console.WriteLine("Regla: Si el préstamo estaba activo, se devuelve el libro automáticamente.");
         Console.WriteLine("Simulación: Préstamo eliminado.");
+        Pausar();
+    }
+
+    // ==========================================
+    // 4. MÓDULO DE BÚSQUEDAS Y REPORTES
+    // ==========================================
+    static void ShowSearchReportsMenu()
+    {
+        bool volver = false;
+        while (!volver)
+        {
+            Console.Clear();
+            Console.WriteLine("--- BÚSQUEDAS Y REPORTES ---");
+            Console.WriteLine("4.1 Buscar libro (título, autor, id, categoría)");
+            Console.WriteLine("4.2 Buscar usuario (nombre, id)");
+            Console.WriteLine("4.3 Reportes (por usuario, por libro, vencidos, resumen)");
+            Console.WriteLine("0. Volver al menú principal");
+            Console.Write("Seleccione una opción: ");
+
+            string opcion = Console.ReadLine();
+
+            switch (opcion)
+            {
+                case "4.1":
+                case "1":
+                    SearchBook();
+                    break;
+                case "4.2":
+                case "2":
+                    SearchUser();
+                    break;
+                case "4.3":
+                case "3":
+                    ReportsMenu();
+                    break;
+                case "0":
+                    volver = true;
+                    break;
+                default:
+                    Console.WriteLine("\nOpción no válida.");
+                    Pausar();
+                    break;
+            }
+        }
+    }
+
+    static void SearchBook()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Buscar libro]");
+        Console.Write("Ingrese criterio de búsqueda (título / autor / ID / categoría): ");
+        Console.ReadLine();
+        Console.WriteLine("Simulación: Resultados de la búsqueda de libros...");
+        Pausar();
+    }
+
+    static void SearchUser()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Buscar usuario]");
+        Console.Write("Ingrese criterio de búsqueda (nombre / ID / documento): ");
+        Console.ReadLine();
+        Console.WriteLine("Simulación: Resultados de la búsqueda de usuarios...");
+        Pausar();
+    }
+
+    static void ReportsMenu()
+    {
+        bool volver = false;
+        while (!volver)
+        {
+            Console.Clear();
+            Console.WriteLine("--- REPORTES ---");
+            Console.WriteLine("1. Préstamos por usuario");
+            Console.WriteLine("2. Préstamos por libro");
+            Console.WriteLine("3. Préstamos vencidos");
+            Console.WriteLine("4. Resumen general (total, disponibles, prestados)");
+            Console.WriteLine("0. Volver");
+            Console.Write("Seleccione una opción: ");
+
+            string opcion = Console.ReadLine();
+            switch (opcion)
+            {
+                case "1":
+                    ReportByUser();
+                    break;
+                case "2":
+                    ReportByBook();
+                    break;
+                case "3":
+                    ReportOverdue();
+                    break;
+                case "4":
+                    ReportSummary();
+                    break;
+                case "0":
+                    volver = true;
+                    break;
+                default:
+                    Console.WriteLine("\nOpción inválida.");
+                    Pausar();
+                    break;
+            }
+        }
+    }
+
+    static void ReportByUser()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Reporte: Préstamos por usuario]");
+        Console.WriteLine("Simulación: Generando reporte por usuario...");
+        Pausar();
+    }
+
+    static void ReportByBook()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Reporte: Préstamos por libro]");
+        Console.WriteLine("Simulación: Generando reporte por libro...");
+        Pausar();
+    }
+
+    static void ReportOverdue()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Reporte: Préstamos vencidos]");
+        Console.WriteLine("Simulación: Listando préstamos con fecha límite superada...");
+        Pausar();
+    }
+
+    static void ReportSummary()
+    {
+        Console.Clear();
+        Console.WriteLine("--> [Reporte: Resumen general]");
+        Console.WriteLine("Simulación: Total libros: 10 | Disponibles: 7 | Prestados: 3");
         Pausar();
     }
 }
