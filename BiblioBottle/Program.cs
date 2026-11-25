@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using BiblioBottle.Models;
+using BiblioBottle.Services;
 
 class Program
 {
@@ -9,74 +11,68 @@ class Program
     }
 
     // ==========================================
-    // OBJETOS DE PRUEBA (EV07)
+    // INICIALIZACIÓN DE SERVICIOS Y DATOS (EV08)
     // ==========================================
-    static (Libro libro1, Libro libro2) CrearLibrosPrueba()
+    static (LibroService libros, UsuarioService usuarios, PrestamoService prestamos) CrearServiciosConDatosPrueba()
     {
-        Libro libro1 = new Libro(
-            1,
-            "978-0321125217",
-            "Domain-Driven Design",
-            "Eric Evans",
-            2003,
-            "Arquitectura de Software"
-        );
+        LibroService libroService = new LibroService();
+        libroService.AgregarLibro(new Libro(1, "978-0321125217", "Domain-Driven Design", "Eric Evans", 2003, "Arquitectura", true));
+        libroService.AgregarLibro(new Libro(2, "978-0132350884", "Clean Code", "Robert C. Martin", 2008, "Ingeniería", false));
+        libroService.AgregarLibro(new Libro(3, "978-0201616224", "The Pragmatic Programmer", "Andrew Hunt", 1999, "Desarrollo", true));
 
-        Libro libro2 = new Libro();
-        libro2.Id = 2;
-        libro2.Isbn = "978-0132350884";
-        libro2.Titulo = "Clean Code";
-        libro2.Autor = "Robert C. Martin";
-        libro2.Anio = 2008;
-        libro2.Categoria = "Ingeniería de Software";
-        libro2.Disponible = false; // Validación de libro no disponible / prestado
+        UsuarioService usuarioService = new UsuarioService();
+        usuarioService.AgregarUsuario(new Usuario(1, "1020304050", "Camila Restrepo", "camila@correo.com", true));
+        usuarioService.AgregarUsuario(new Usuario(2, "9876543210", "Andrés Morales", "3004567890", false));
+        usuarioService.AgregarUsuario(new Usuario(3, "1122334455", "Valentina Gómez", "valentina@correo.com", true));
 
-        return (libro1, libro2);
+        PrestamoService prestamoService = new PrestamoService();
+        prestamoService.AgregarPrestamo(new Prestamo(101, 2, 1, DateTime.Now.AddDays(-10), DateTime.Now.AddDays(-3), null, EstadoPrestamo.Activo));
+        prestamoService.AgregarPrestamo(new Prestamo(102, 1, 3, DateTime.Now.AddDays(-15), DateTime.Now.AddDays(-5), DateTime.Now.AddDays(-6), EstadoPrestamo.Devuelto));
+
+        return (libroService, usuarioService, prestamoService);
     }
 
-    static (Usuario usuario1, Usuario usuario2) CrearUsuariosPrueba()
+    static void DemostrarArrayVsList()
     {
-        Usuario usuario1 = new Usuario(
-            1,
-            "1020304050",
-            "Camila Restrepo",
-            "camila.restrepo@correo.com"
-        );
+        Console.Clear();
+        Console.WriteLine("=== COMPARACIÓN: ARRAY VS LIST<T> (EV08) ===\n");
 
-        Usuario usuario2 = new Usuario();
-        usuario2.Id = 2;
-        usuario2.Documento = "9876543210";
-        usuario2.Nombre = "Andrés Morales";
-        usuario2.Contacto = "3004567890";
-        usuario2.Activo = false; // Validación de usuario inactivo
+        // Ejemplo con Array (tamaño fijo definido al crearlo)
+        string[] titulosArray = new string[2];
+        titulosArray[0] = "Domain-Driven Design";
+        titulosArray[1] = "Clean Code";
 
-        return (usuario1, usuario2);
+        Console.WriteLine("1) Ejemplo con Array (tamaño fijo = 2):");
+        foreach (string titulo in titulosArray)
+        {
+            Console.WriteLine($"   - {titulo}");
+        }
+
+        // Ejemplo con List<T> (colección dinámica que crece o se reduce en ejecución)
+        List<string> titulosLista = new List<string> { "Domain-Driven Design", "Clean Code" };
+        titulosLista.Add("The Pragmatic Programmer"); // Crece dinámicamente
+        titulosLista.Remove("Clean Code");            // Se reduce dinámicamente
+
+        Console.WriteLine("\n2) Ejemplo con List<T> (dinámica, tras Add y Remove):");
+        foreach (string titulo in titulosLista)
+        {
+            Console.WriteLine($"   - {titulo}");
+        }
+
+        Console.WriteLine("\nDiferencias clave:");
+        Console.WriteLine("- Array: tamaño fijo en memoria; rápido por índice, pero agregar/quitar elementos exige crear otro arreglo.");
+        Console.WriteLine("- List<T>: tamaño dinámico (Count, Add, Remove, Find/Where, Sort/OrderBy); más flexible para servicios en memoria.");
+
+        Pausar();
     }
 
-    static Prestamo CrearPrestamoPrueba()
+    static void MostrarKpisGenerales(LibroService libros, UsuarioService usuarios, PrestamoService prestamos)
     {
-        // Préstamo con fecha límite pasada para validar EstaVencido() y DiasTranscurridos()
-        return new Prestamo(
-            101,
-            2,
-            1,
-            DateTime.Now.AddDays(-10),
-            DateTime.Now.AddDays(-3),
-            null,
-            EstadoPrestamo.Activo
-        );
-    }
-
-    static void MostrarValidacionesModelos(Libro l1, Libro l2, Usuario u1, Usuario u2, Prestamo p1)
-    {
-        Console.WriteLine("\n--- VALIDACIONES DE ESTADOS Y MÉTODOS ---");
-        Console.WriteLine($"Libro 1 Disponible: {l1.Disponible}");
-        Console.WriteLine($"Libro 2 Disponible: {l2.Disponible}");
-        Console.WriteLine($"Usuario 1 Activo: {u1.Activo}");
-        Console.WriteLine($"Usuario 2 Activo: {u2.Activo}");
-        Console.WriteLine($"Préstamo Estado inicial: {p1.Estado} | FechaDevolucion: {(p1.FechaDevolucion.HasValue ? p1.FechaDevolucion.Value.ToString("yyyy-MM-dd") : "null")}");
-        Console.WriteLine($"Préstamo EstaVencido(): {p1.EstaVencido()}");
-        Console.WriteLine($"Préstamo DiasTranscurridos(): {p1.DiasTranscurridos()}");
+        Console.WriteLine("\n=== KPIs Y ESTADÍSTICAS DEL SISTEMA ===");
+        Console.WriteLine($"[Libros]   Total: {libros.ObtenerTotalLibros()} | Disponibles: {libros.ObtenerLibrosDisponibles()} | Prestados: {libros.ObtenerLibrosPrestados()}");
+        Console.WriteLine($"[Usuarios] Total: {usuarios.ObtenerTotalUsuarios()} | Activos: {usuarios.ObtenerUsuariosActivos()} | Inactivos: {usuarios.ObtenerUsuariosInactivos()}");
+        Console.WriteLine($"[Préstamos] Total: {prestamos.ObtenerTotalPrestamos()} | Activos: {prestamos.ObtenerPrestamosActivos()} | Vencidos: {prestamos.ObtenerPrestamosVencidos()} | Devueltos: {prestamos.ObtenerPrestamosDevueltos()}");
+        Console.WriteLine($"[Préstamos] Promedio días transcurridos: {prestamos.ObtenerPromedioDiasPrestamo():F1}");
     }
 
     // ==========================================
@@ -205,7 +201,7 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Registrar libro]");
-        Console.WriteLine("Simulación: Libro registrado exitosamente en el diccionario/estructura.");
+        Console.WriteLine("Simulación: Libro registrado exitosamente en el servicio.");
         Pausar();
     }
 
@@ -251,47 +247,56 @@ class Program
     static void ListBooksAll()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar todos los libros - Objetos de prueba EV07]");
-        var (l1, l2) = CrearLibrosPrueba();
-        Console.WriteLine("Resumen 1 (ResumenCorto): " + l1.ResumenCorto());
-        Console.WriteLine("Resumen 2 (ToString): " + l2.ToString());
-        Console.WriteLine($"\nValidación Disponible -> Libro 1: {l1.Disponible} | Libro 2: {l2.Disponible}");
+        var (libroService, _, _) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Todos los libros ordenados por título]");
+        foreach (Libro l in libroService.OrdenarPorTitulo())
+        {
+            Console.WriteLine(l.ResumenCorto());
+        }
         Pausar();
     }
 
     static void ListBooksAvailable()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar libros disponibles]");
-        var (l1, l2) = CrearLibrosPrueba();
-        if (l1.Disponible) Console.WriteLine(l1.ResumenCorto());
-        if (l2.Disponible) Console.WriteLine(l2.ResumenCorto());
+        var (libroService, _, _) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Libros disponibles]");
+        foreach (Libro l in libroService.ObtenerTodos())
+        {
+            if (l.Disponible) Console.WriteLine(l.ResumenCorto());
+        }
         Pausar();
     }
 
     static void ListBooksBorrowed()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar libros prestados]");
-        var (l1, l2) = CrearLibrosPrueba();
-        if (!l1.Disponible) Console.WriteLine(l1.ResumenCorto());
-        if (!l2.Disponible) Console.WriteLine(l2.ResumenCorto());
+        var (libroService, _, _) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Libros prestados]");
+        foreach (Libro l in libroService.ObtenerTodos())
+        {
+            if (!l.Disponible) Console.WriteLine(l.ResumenCorto());
+        }
         Pausar();
     }
 
     static void ViewBookDetail()
     {
         Console.Clear();
-        Console.WriteLine("--> [Ver detalle de libro - Objetos de prueba EV07]");
-        Console.Write("Ingrese el ID o ISBN del libro (o Enter para ver ambos): ");
-        Console.ReadLine();
+        var (libroService, _, _) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Ver detalle de libro]");
+        Console.Write("Ingrese ISBN o deje vacío para ver todos ordenados por año: ");
+        string criterio = Console.ReadLine() ?? string.Empty;
 
-        var (l1, l2) = CrearLibrosPrueba();
-        Console.WriteLine();
-        Console.WriteLine(l1.DetalleCompleto());
-        Console.WriteLine();
-        Console.WriteLine(l2.DetalleCompleto());
-        Console.WriteLine($"\nValidación Disponible -> Libro 1: {l1.Disponible} | Libro 2: {l2.Disponible}");
+        var lista = string.IsNullOrWhiteSpace(criterio)
+            ? libroService.OrdenarPorAnio()
+            : libroService.BuscarPorIsbn(criterio);
+
+        foreach (Libro l in lista)
+        {
+            Console.WriteLine();
+            Console.WriteLine(l.DetalleCompleto());
+        }
         Pausar();
     }
 
@@ -361,9 +366,10 @@ class Program
     static void DeleteBook()
     {
         Console.Clear();
-        Console.WriteLine("--> [Eliminar libro]");
-        Console.WriteLine("Validación: Comprobando que el libro no esté prestado...");
-        Console.WriteLine("Simulación: Libro eliminado correctamente.");
+        var (libroService, _, _) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Prueba de eliminación en LibroService]");
+        Console.WriteLine("Intentando eliminar Libro ID 2 (prestado): " + libroService.EliminarLibro(2));
+        Console.WriteLine("Intentando eliminar Libro ID 3 (disponible): " + libroService.EliminarLibro(3));
         Pausar();
     }
 
@@ -431,27 +437,25 @@ class Program
     static void ListUsers()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar usuarios - Objetos de prueba EV07]");
-        var (u1, u2) = CrearUsuariosPrueba();
-        Console.WriteLine("Resumen 1 (ResumenCorto): " + u1.ResumenCorto());
-        Console.WriteLine("Resumen 2 (ToString): " + u2.ToString());
-        Console.WriteLine($"\nValidación Activo -> Usuario 1: {u1.Activo} | Usuario 2: {u2.Activo}");
+        var (_, usuarioService, _) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Usuarios ordenados por nombre]");
+        foreach (Usuario u in usuarioService.OrdenarPorNombre())
+        {
+            Console.WriteLine(u.ResumenCorto());
+        }
         Pausar();
     }
 
     static void ViewUserDetail()
     {
         Console.Clear();
-        Console.WriteLine("--> [Ver detalle de usuario - Objetos de prueba EV07]");
-        Console.Write("Ingrese el ID o documento del usuario (o Enter para ver ambos): ");
-        Console.ReadLine();
-
-        var (u1, u2) = CrearUsuariosPrueba();
-        Console.WriteLine();
-        Console.WriteLine(u1.DetalleCompleto());
-        Console.WriteLine();
-        Console.WriteLine(u2.DetalleCompleto());
-        Console.WriteLine($"\nValidación Activo -> Usuario 1: {u1.Activo} | Usuario 2: {u2.Activo}");
+        var (_, usuarioService, _) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Detalle de usuarios]");
+        foreach (Usuario u in usuarioService.ObtenerTodos())
+        {
+            Console.WriteLine();
+            Console.WriteLine(u.DetalleCompleto());
+        }
         Pausar();
     }
 
@@ -521,9 +525,10 @@ class Program
     static void DeleteUser()
     {
         Console.Clear();
-        Console.WriteLine("--> [Eliminar usuario]");
-        Console.WriteLine("Validación: Verificando que no tenga préstamos activos...");
-        Console.WriteLine("Simulación: Usuario eliminado correctamente.");
+        var (_, usuarioService, _) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Prueba de eliminación en UsuarioService]");
+        Console.WriteLine("Intentando eliminar Usuario ID 1 (con préstamo activo): " + usuarioService.EliminarUsuario(1, true));
+        Console.WriteLine("Intentando eliminar Usuario ID 2 (sin préstamos activos): " + usuarioService.EliminarUsuario(2, false));
         Pausar();
     }
 
@@ -584,11 +589,7 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Crear préstamo]");
-        Console.WriteLine("Validaciones en proceso:");
-        Console.WriteLine("- Comprobando que el usuario existe y está activo...");
-        Console.WriteLine("- Comprobando que el libro existe y está disponible...");
-        Console.WriteLine("- Verificando límite de préstamos activos...");
-        Console.WriteLine("Simulación: Préstamo creado exitosamente.");
+        Console.WriteLine("Simulación: Préstamo registrado en PrestamoService.");
         Pausar();
     }
 
@@ -634,22 +635,23 @@ class Program
     static void ListLoansAll()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar todos los préstamos - Objeto de prueba EV07]");
-        var prestamo = CrearPrestamoPrueba();
-        Console.WriteLine("Resumen (ResumenCorto): " + prestamo.ResumenCorto());
-        Console.WriteLine("Resumen (ToString): " + prestamo.ToString());
-        Console.WriteLine($"Estado: {prestamo.Estado} | EstaVencido(): {prestamo.EstaVencido()} | DiasTranscurridos(): {prestamo.DiasTranscurridos()}");
+        var (_, _, prestamoService) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Préstamos ordenados por fecha límite]");
+        foreach (Prestamo p in prestamoService.OrdenarPorFechaLimite())
+        {
+            Console.WriteLine(p.ResumenCorto());
+        }
         Pausar();
     }
 
     static void ListLoansActive()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar préstamos activos]");
-        var prestamo = CrearPrestamoPrueba();
-        if (prestamo.Estado == EstadoPrestamo.Activo)
+        var (_, _, prestamoService) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Préstamos activos]");
+        foreach (Prestamo p in prestamoService.BuscarPorEstado(EstadoPrestamo.Activo))
         {
-            Console.WriteLine(prestamo.ResumenCorto());
+            Console.WriteLine(p.ResumenCorto());
         }
         Pausar();
     }
@@ -657,25 +659,25 @@ class Program
     static void ListLoansClosed()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar préstamos cerrados]");
-        Console.WriteLine("Simulación: Mostrando préstamos cerrados / devueltos...");
+        var (_, _, prestamoService) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Préstamos devueltos]");
+        foreach (Prestamo p in prestamoService.BuscarPorEstado(EstadoPrestamo.Devuelto))
+        {
+            Console.WriteLine(p.ResumenCorto());
+        }
         Pausar();
     }
 
     static void ViewLoanDetail()
     {
         Console.Clear();
-        Console.WriteLine("--> [Ver detalle de préstamo - Objeto de prueba EV07]");
-        Console.Write("Ingrese el ID del préstamo (o Enter para ver el de prueba): ");
-        Console.ReadLine();
-
-        var (l1, l2) = CrearLibrosPrueba();
-        var (u1, u2) = CrearUsuariosPrueba();
-        var prestamo = CrearPrestamoPrueba();
-
-        Console.WriteLine();
-        Console.WriteLine(prestamo.DetalleCompleto());
-        MostrarValidacionesModelos(l1, l2, u1, u2, prestamo);
+        var (_, _, prestamoService) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Detalle de préstamos]");
+        foreach (Prestamo p in prestamoService.ObtenerTodos())
+        {
+            Console.WriteLine();
+            Console.WriteLine(p.DetalleCompleto());
+        }
         Pausar();
     }
 
@@ -683,7 +685,7 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Registrar devolución]");
-        Console.WriteLine("Simulación: Estado del préstamo cambiado a 'devuelto' y libro marcado como 'disponible'.");
+        Console.WriteLine("Simulación: Préstamo marcado como devuelto.");
         Pausar();
     }
 
@@ -691,7 +693,6 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Eliminar préstamo]");
-        Console.WriteLine("Regla: Si el préstamo estaba activo, se devuelve el libro automáticamente.");
         Console.WriteLine("Simulación: Préstamo eliminado.");
         Pausar();
     }
@@ -706,9 +707,10 @@ class Program
         {
             Console.Clear();
             Console.WriteLine("--- BÚSQUEDAS Y REPORTES ---");
-            Console.WriteLine("4.1 Buscar libro (título, autor, id, categoría)");
-            Console.WriteLine("4.2 Buscar usuario (nombre, id)");
-            Console.WriteLine("4.3 Reportes (por usuario, por libro, vencidos, resumen)");
+            Console.WriteLine("4.1 Buscar libro (título / autor)");
+            Console.WriteLine("4.2 Buscar usuario (nombre / documento)");
+            Console.WriteLine("4.3 Reportes y KPIs");
+            Console.WriteLine("4.4 Comparación Array vs List<T>");
             Console.WriteLine("0. Volver al menú principal");
             Console.Write("Seleccione una opción: ");
 
@@ -728,6 +730,10 @@ class Program
                 case "3":
                     ReportsMenu();
                     break;
+                case "4.4":
+                case "4":
+                    DemostrarArrayVsList();
+                    break;
                 case "0":
                     volver = true;
                     break;
@@ -742,20 +748,38 @@ class Program
     static void SearchBook()
     {
         Console.Clear();
-        Console.WriteLine("--> [Buscar libro]");
-        Console.Write("Ingrese criterio de búsqueda (título / autor / ID / categoría): ");
-        Console.ReadLine();
-        Console.WriteLine("Simulación: Resultados de la búsqueda de libros...");
+        var (libroService, _, _) = CrearServiciosConDatosPrueba();
+        Console.Write("Ingrese título o autor a buscar: ");
+        string texto = Console.ReadLine() ?? string.Empty;
+
+        var porTitulo = libroService.BuscarPorTitulo(texto);
+        var porAutor = libroService.BuscarPorAutor(texto);
+
+        Console.WriteLine("\n--- Resultados por título ---");
+        foreach (Libro l in porTitulo) Console.WriteLine(l.ResumenCorto());
+
+        Console.WriteLine("\n--- Resultados por autor ---");
+        foreach (Libro l in porAutor) Console.WriteLine(l.ResumenCorto());
+
         Pausar();
     }
 
     static void SearchUser()
     {
         Console.Clear();
-        Console.WriteLine("--> [Buscar usuario]");
-        Console.Write("Ingrese criterio de búsqueda (nombre / ID / documento): ");
-        Console.ReadLine();
-        Console.WriteLine("Simulación: Resultados de la búsqueda de usuarios...");
+        var (_, usuarioService, _) = CrearServiciosConDatosPrueba();
+        Console.Write("Ingrese nombre o documento a buscar: ");
+        string texto = Console.ReadLine() ?? string.Empty;
+
+        var porNombre = usuarioService.BuscarPorNombre(texto);
+        var porDocumento = usuarioService.BuscarPorDocumento(texto);
+
+        Console.WriteLine("\n--- Resultados por nombre ---");
+        foreach (Usuario u in porNombre) Console.WriteLine(u.ResumenCorto());
+
+        Console.WriteLine("\n--- Resultados por documento ---");
+        foreach (Usuario u in porDocumento) Console.WriteLine(u.ResumenCorto());
+
         Pausar();
     }
 
@@ -765,11 +789,11 @@ class Program
         while (!volver)
         {
             Console.Clear();
-            Console.WriteLine("--- REPORTES ---");
+            Console.WriteLine("--- REPORTES Y KPIs ---");
             Console.WriteLine("1. Préstamos por usuario");
             Console.WriteLine("2. Préstamos por libro");
             Console.WriteLine("3. Préstamos vencidos");
-            Console.WriteLine("4. Resumen general (total, disponibles, prestados)");
+            Console.WriteLine("4. Resumen general y KPIs");
             Console.WriteLine("0. Volver");
             Console.Write("Seleccione una opción: ");
 
@@ -802,37 +826,55 @@ class Program
     static void ReportByUser()
     {
         Console.Clear();
-        Console.WriteLine("--> [Reporte: Préstamos por usuario]");
-        Console.WriteLine("Simulación: Generando reporte por usuario...");
+        var (_, usuarioService, prestamoService) = CrearServiciosConDatosPrueba();
+        foreach (Usuario u in usuarioService.ObtenerTodos())
+        {
+            int count = 0;
+            foreach (Prestamo p in prestamoService.ObtenerTodos())
+            {
+                if (p.UsuarioId == u.Id) count++;
+            }
+            Console.WriteLine($"{u.ResumenCorto()} -> Préstamos asociados: {count}");
+        }
         Pausar();
     }
 
     static void ReportByBook()
     {
         Console.Clear();
-        Console.WriteLine("--> [Reporte: Préstamos por libro]");
-        Console.WriteLine("Simulación: Generando reporte por libro...");
+        var (libroService, _, prestamoService) = CrearServiciosConDatosPrueba();
+        foreach (Libro l in libroService.ObtenerTodos())
+        {
+            int count = 0;
+            foreach (Prestamo p in prestamoService.ObtenerTodos())
+            {
+                if (p.LibroId == l.Id) count++;
+            }
+            Console.WriteLine($"{l.ResumenCorto()} -> Préstamos asociados: {count}");
+        }
         Pausar();
     }
 
     static void ReportOverdue()
     {
         Console.Clear();
-        Console.WriteLine("--> [Reporte: Préstamos vencidos]");
-        var prestamo = CrearPrestamoPrueba();
-        Console.WriteLine($"Préstamo #{prestamo.Id} | EstaVencido(): {prestamo.EstaVencido()} | Días transcurridos: {prestamo.DiasTranscurridos()}");
-        Console.WriteLine(prestamo.DetalleCompleto());
+        var (_, _, prestamoService) = CrearServiciosConDatosPrueba();
+        Console.WriteLine("--> [Préstamos vencidos]");
+        foreach (Prestamo p in prestamoService.ObtenerTodos())
+        {
+            if (p.EstaVencido() || p.Estado == EstadoPrestamo.Vencido)
+            {
+                Console.WriteLine(p.DetalleCompleto());
+            }
+        }
         Pausar();
     }
 
     static void ReportSummary()
     {
         Console.Clear();
-        Console.WriteLine("--> [Reporte: Resumen general]");
-        var (l1, l2) = CrearLibrosPrueba();
-        var (u1, u2) = CrearUsuariosPrueba();
-        var p1 = CrearPrestamoPrueba();
-        MostrarValidacionesModelos(l1, l2, u1, u2, p1);
+        var (libroService, usuarioService, prestamoService) = CrearServiciosConDatosPrueba();
+        MostrarKpisGenerales(libroService, usuarioService, prestamoService);
         Pausar();
     }
 
@@ -883,7 +925,7 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Guardar datos]");
-        Console.WriteLine("Simulación: Datos guardados correctamente en archivos simulados.");
+        Console.WriteLine("Simulación: Datos guardados correctamente.");
         Pausar();
     }
 
