@@ -1,10 +1,82 @@
 ﻿using System;
+using BiblioBottle.Models;
 
 class Program
 {
     static void Main(string[] args)
     {
         ShowMainMenu();
+    }
+
+    // ==========================================
+    // OBJETOS DE PRUEBA (EV07)
+    // ==========================================
+    static (Libro libro1, Libro libro2) CrearLibrosPrueba()
+    {
+        Libro libro1 = new Libro(
+            1,
+            "978-0321125217",
+            "Domain-Driven Design",
+            "Eric Evans",
+            2003,
+            "Arquitectura de Software"
+        );
+
+        Libro libro2 = new Libro();
+        libro2.Id = 2;
+        libro2.Isbn = "978-0132350884";
+        libro2.Titulo = "Clean Code";
+        libro2.Autor = "Robert C. Martin";
+        libro2.Anio = 2008;
+        libro2.Categoria = "Ingeniería de Software";
+        libro2.Disponible = false; // Validación de libro no disponible / prestado
+
+        return (libro1, libro2);
+    }
+
+    static (Usuario usuario1, Usuario usuario2) CrearUsuariosPrueba()
+    {
+        Usuario usuario1 = new Usuario(
+            1,
+            "1020304050",
+            "Camila Restrepo",
+            "camila.restrepo@correo.com"
+        );
+
+        Usuario usuario2 = new Usuario();
+        usuario2.Id = 2;
+        usuario2.Documento = "9876543210";
+        usuario2.Nombre = "Andrés Morales";
+        usuario2.Contacto = "3004567890";
+        usuario2.Activo = false; // Validación de usuario inactivo
+
+        return (usuario1, usuario2);
+    }
+
+    static Prestamo CrearPrestamoPrueba()
+    {
+        // Préstamo con fecha límite pasada para validar EstaVencido() y DiasTranscurridos()
+        return new Prestamo(
+            101,
+            2,
+            1,
+            DateTime.Now.AddDays(-10),
+            DateTime.Now.AddDays(-3),
+            null,
+            EstadoPrestamo.Activo
+        );
+    }
+
+    static void MostrarValidacionesModelos(Libro l1, Libro l2, Usuario u1, Usuario u2, Prestamo p1)
+    {
+        Console.WriteLine("\n--- VALIDACIONES DE ESTADOS Y MÉTODOS ---");
+        Console.WriteLine($"Libro 1 Disponible: {l1.Disponible}");
+        Console.WriteLine($"Libro 2 Disponible: {l2.Disponible}");
+        Console.WriteLine($"Usuario 1 Activo: {u1.Activo}");
+        Console.WriteLine($"Usuario 2 Activo: {u2.Activo}");
+        Console.WriteLine($"Préstamo Estado inicial: {p1.Estado} | FechaDevolucion: {(p1.FechaDevolucion.HasValue ? p1.FechaDevolucion.Value.ToString("yyyy-MM-dd") : "null")}");
+        Console.WriteLine($"Préstamo EstaVencido(): {p1.EstaVencido()}");
+        Console.WriteLine($"Préstamo DiasTranscurridos(): {p1.DiasTranscurridos()}");
     }
 
     // ==========================================
@@ -25,34 +97,24 @@ class Program
             Console.WriteLine("6. Salir");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
 
             switch (opcion)
             {
                 case "1":
-                    // Se conectará con feature/books-menu
-                    Console.WriteLine("\n[Módulo de Libros en desarrollo]");
-                    Pausar();
+                    ShowBooksMenu();
                     break;
                 case "2":
-                    // Se conectará con feature/users-menu
-                    Console.WriteLine("\n[Módulo de Usuarios en desarrollo]");
-                    Pausar();
+                    ShowUsersMenu();
                     break;
                 case "3":
-                    // Se conectará con feature/loans-menu
-                    Console.WriteLine("\n[Módulo de Préstamos en desarrollo]");
-                    Pausar();
+                    ShowLoansMenu();
                     break;
                 case "4":
-                    // Se conectará con feature/search-reports-menu
-                    Console.WriteLine("\n[Módulo de Búsquedas y Reportes en desarrollo]");
-                    Pausar();
+                    ShowSearchReportsMenu();
                     break;
                 case "5":
-                    // Se conectará con feature/persistence-menu
-                    Console.WriteLine("\n[Módulo de Persistencia en desarrollo]");
-                    Pausar();
+                    ShowPersistenceMenu();
                     break;
                 case "6":
                     salir = ConfirmExitAndSave();
@@ -69,7 +131,7 @@ class Program
     {
         Console.Clear();
         Console.Write("¿Desea guardar los cambios antes de salir? (S/N): ");
-        string respuesta = Console.ReadLine().Trim().ToUpper();
+        string respuesta = (Console.ReadLine() ?? string.Empty).Trim().ToUpper();
 
         if (respuesta == "S")
         {
@@ -80,9 +142,6 @@ class Program
         return true;
     }
 
-    // ==========================================
-    // MÉTODO AUXILIAR
-    // ==========================================
     static void Pausar()
     {
         Console.WriteLine("\nPresione cualquier tecla para continuar...");
@@ -107,7 +166,7 @@ class Program
             Console.WriteLine("0. Volver al menú principal");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
 
             switch (opcion)
             {
@@ -163,7 +222,7 @@ class Program
             Console.WriteLine("0. Volver");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
             switch (opcion)
             {
                 case "1.2.1":
@@ -192,8 +251,11 @@ class Program
     static void ListBooksAll()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar todos los libros]");
-        Console.WriteLine("Simulación: Mostrando lista completa de libros...");
+        Console.WriteLine("--> [Listar todos los libros - Objetos de prueba EV07]");
+        var (l1, l2) = CrearLibrosPrueba();
+        Console.WriteLine("Resumen 1 (ResumenCorto): " + l1.ResumenCorto());
+        Console.WriteLine("Resumen 2 (ToString): " + l2.ToString());
+        Console.WriteLine($"\nValidación Disponible -> Libro 1: {l1.Disponible} | Libro 2: {l2.Disponible}");
         Pausar();
     }
 
@@ -201,7 +263,9 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Listar libros disponibles]");
-        Console.WriteLine("Simulación: Mostrando libros disponibles...");
+        var (l1, l2) = CrearLibrosPrueba();
+        if (l1.Disponible) Console.WriteLine(l1.ResumenCorto());
+        if (l2.Disponible) Console.WriteLine(l2.ResumenCorto());
         Pausar();
     }
 
@@ -209,17 +273,25 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Listar libros prestados]");
-        Console.WriteLine("Simulación: Mostrando libros actualmente prestados...");
+        var (l1, l2) = CrearLibrosPrueba();
+        if (!l1.Disponible) Console.WriteLine(l1.ResumenCorto());
+        if (!l2.Disponible) Console.WriteLine(l2.ResumenCorto());
         Pausar();
     }
 
     static void ViewBookDetail()
     {
         Console.Clear();
-        Console.WriteLine("--> [Ver detalle de libro]");
-        Console.Write("Ingrese el ID o ISBN del libro: ");
+        Console.WriteLine("--> [Ver detalle de libro - Objetos de prueba EV07]");
+        Console.Write("Ingrese el ID o ISBN del libro (o Enter para ver ambos): ");
         Console.ReadLine();
-        Console.WriteLine("Simulación: Mostrando detalles del libro...");
+
+        var (l1, l2) = CrearLibrosPrueba();
+        Console.WriteLine();
+        Console.WriteLine(l1.DetalleCompleto());
+        Console.WriteLine();
+        Console.WriteLine(l2.DetalleCompleto());
+        Console.WriteLine($"\nValidación Disponible -> Libro 1: {l1.Disponible} | Libro 2: {l2.Disponible}");
         Pausar();
     }
 
@@ -236,7 +308,7 @@ class Program
             Console.WriteLine("0. Volver");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
             switch (opcion)
             {
                 case "1.4.1":
@@ -313,7 +385,7 @@ class Program
             Console.WriteLine("0. Volver al menú principal");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
 
             switch (opcion)
             {
@@ -359,18 +431,27 @@ class Program
     static void ListUsers()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar usuarios]");
-        Console.WriteLine("Simulación: Mostrando todos los usuarios registrados...");
+        Console.WriteLine("--> [Listar usuarios - Objetos de prueba EV07]");
+        var (u1, u2) = CrearUsuariosPrueba();
+        Console.WriteLine("Resumen 1 (ResumenCorto): " + u1.ResumenCorto());
+        Console.WriteLine("Resumen 2 (ToString): " + u2.ToString());
+        Console.WriteLine($"\nValidación Activo -> Usuario 1: {u1.Activo} | Usuario 2: {u2.Activo}");
         Pausar();
     }
 
     static void ViewUserDetail()
     {
         Console.Clear();
-        Console.WriteLine("--> [Ver detalle de usuario]");
-        Console.Write("Ingrese el ID o documento del usuario: ");
+        Console.WriteLine("--> [Ver detalle de usuario - Objetos de prueba EV07]");
+        Console.Write("Ingrese el ID o documento del usuario (o Enter para ver ambos): ");
         Console.ReadLine();
-        Console.WriteLine("Simulación: Mostrando detalles del usuario...");
+
+        var (u1, u2) = CrearUsuariosPrueba();
+        Console.WriteLine();
+        Console.WriteLine(u1.DetalleCompleto());
+        Console.WriteLine();
+        Console.WriteLine(u2.DetalleCompleto());
+        Console.WriteLine($"\nValidación Activo -> Usuario 1: {u1.Activo} | Usuario 2: {u2.Activo}");
         Pausar();
     }
 
@@ -387,7 +468,7 @@ class Program
             Console.WriteLine("0. Volver");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
             switch (opcion)
             {
                 case "2.4.1":
@@ -464,7 +545,7 @@ class Program
             Console.WriteLine("0. Volver al menú principal");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
 
             switch (opcion)
             {
@@ -524,7 +605,7 @@ class Program
             Console.WriteLine("0. Volver");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
             switch (opcion)
             {
                 case "3.2.1":
@@ -553,8 +634,11 @@ class Program
     static void ListLoansAll()
     {
         Console.Clear();
-        Console.WriteLine("--> [Listar todos los préstamos]");
-        Console.WriteLine("Simulación: Mostrando todos los préstamos...");
+        Console.WriteLine("--> [Listar todos los préstamos - Objeto de prueba EV07]");
+        var prestamo = CrearPrestamoPrueba();
+        Console.WriteLine("Resumen (ResumenCorto): " + prestamo.ResumenCorto());
+        Console.WriteLine("Resumen (ToString): " + prestamo.ToString());
+        Console.WriteLine($"Estado: {prestamo.Estado} | EstaVencido(): {prestamo.EstaVencido()} | DiasTranscurridos(): {prestamo.DiasTranscurridos()}");
         Pausar();
     }
 
@@ -562,7 +646,11 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Listar préstamos activos]");
-        Console.WriteLine("Simulación: Mostrando préstamos activos...");
+        var prestamo = CrearPrestamoPrueba();
+        if (prestamo.Estado == EstadoPrestamo.Activo)
+        {
+            Console.WriteLine(prestamo.ResumenCorto());
+        }
         Pausar();
     }
 
@@ -577,10 +665,17 @@ class Program
     static void ViewLoanDetail()
     {
         Console.Clear();
-        Console.WriteLine("--> [Ver detalle de préstamo]");
-        Console.Write("Ingrese el ID del préstamo: ");
+        Console.WriteLine("--> [Ver detalle de préstamo - Objeto de prueba EV07]");
+        Console.Write("Ingrese el ID del préstamo (o Enter para ver el de prueba): ");
         Console.ReadLine();
-        Console.WriteLine("Simulación: Mostrando detalles del préstamo...");
+
+        var (l1, l2) = CrearLibrosPrueba();
+        var (u1, u2) = CrearUsuariosPrueba();
+        var prestamo = CrearPrestamoPrueba();
+
+        Console.WriteLine();
+        Console.WriteLine(prestamo.DetalleCompleto());
+        MostrarValidacionesModelos(l1, l2, u1, u2, prestamo);
         Pausar();
     }
 
@@ -617,7 +712,7 @@ class Program
             Console.WriteLine("0. Volver al menú principal");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
 
             switch (opcion)
             {
@@ -678,7 +773,7 @@ class Program
             Console.WriteLine("0. Volver");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
             switch (opcion)
             {
                 case "1":
@@ -724,7 +819,9 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Reporte: Préstamos vencidos]");
-        Console.WriteLine("Simulación: Listando préstamos con fecha límite superada...");
+        var prestamo = CrearPrestamoPrueba();
+        Console.WriteLine($"Préstamo #{prestamo.Id} | EstaVencido(): {prestamo.EstaVencido()} | Días transcurridos: {prestamo.DiasTranscurridos()}");
+        Console.WriteLine(prestamo.DetalleCompleto());
         Pausar();
     }
 
@@ -732,7 +829,10 @@ class Program
     {
         Console.Clear();
         Console.WriteLine("--> [Reporte: Resumen general]");
-        Console.WriteLine("Simulación: Total libros: 10 | Disponibles: 7 | Prestados: 3");
+        var (l1, l2) = CrearLibrosPrueba();
+        var (u1, u2) = CrearUsuariosPrueba();
+        var p1 = CrearPrestamoPrueba();
+        MostrarValidacionesModelos(l1, l2, u1, u2, p1);
         Pausar();
     }
 
@@ -752,7 +852,7 @@ class Program
             Console.WriteLine("0. Volver al menú principal");
             Console.Write("Seleccione una opción: ");
 
-            string opcion = Console.ReadLine();
+            string opcion = Console.ReadLine() ?? string.Empty;
 
             switch (opcion)
             {
@@ -800,7 +900,7 @@ class Program
         Console.Clear();
         Console.WriteLine("--> [Reiniciar datos]");
         Console.Write("¿Está seguro de vaciar todos los datos? (S/N): ");
-        string respuesta = Console.ReadLine().Trim().ToUpper();
+        string respuesta = (Console.ReadLine() ?? string.Empty).Trim().ToUpper();
 
         if (respuesta == "S")
         {
