@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BiblioBottle")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+806be8932e11c408d23bdedc38be280e704fe7f0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+252529eb848419bf4fd43b2f1eca957e98e75b63")]
 [assembly: System.Reflection.AssemblyProductAttribute("BiblioBottle")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BiblioBottle")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
